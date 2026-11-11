@@ -61,7 +61,9 @@ async function loadModels() {
       throw new Error("Could not load the classifier labels.");
     }
     classNames = await labelsResponse.json();
-    if (!Array.isArray(classNames) || classNames.length !== model.outputs.length) {
+    const outputShape = model.outputs[0]?.shape;
+    const modelClassCount = outputShape?.[outputShape.length - 1];
+    if (!Array.isArray(classNames) || classNames.length !== modelClassCount) {
       throw new Error("Classifier labels do not match the model output.");
     }
     const warmup = tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]);

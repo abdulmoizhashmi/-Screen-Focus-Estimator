@@ -11,6 +11,46 @@ import tensorflow as tf
 IMG_SIZE = (160, 160)
 
 
+def make_inference_model(model):
+    base = next(
+        (
+            layer
+            for layer in model.layers
+            if isinstance(layer, tf.keras.Model)
+            and not isinstance(layer, tf.keras.Sequential)
+        ),
+        None,
+    )
+    pooling = next(
+        (
+            layer
+            for layer in model.layers
+            if isinstance(layer, tf.keras.layers.GlobalAveragePooling2D)
+        ),
+        None,
+    )
+    classifier = next(
+        (
+            layer
+            for layer in reversed(model.layers)
+            if isinstance(layer, tf.keras.layers.Dense)
+        ),
+        None,
+    )
+    if base is None or pooling is None or classifier is None:
+        raise RuntimeError(
+            "The trained model must contain a MobileNetV2 base, global average "
+            "pooling, and a dense classifier."
+        )
+
+    inputs = tf.keras.Input(shape=(*IMG_SIZE, 3), name="images")
+    x = tf.keras.applications.mobilenet_v2.preprocess_input(inputs)
+    x = base(x, training=False)
+    x = pooling(x)
+    outputs = classifier(x)
+    return tf.keras.Model(inputs, outputs, name="eye_look_inference")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Export the trained Keras classifier for browser inference."
@@ -40,6 +80,19 @@ def main():
         )
 
     model = tf.keras.models.load_model(model_path, compile=False)
+    inference_model = make_inference_model(model)
+    if inference_model.output_shape[-1] != len(class_names):
+        raise ValueError(
+            f"Model output has {inference_model.output_shape[-1]} classes, "
+            f"but {len(class_names)} class names were provided."
+        )
+
+    sample = tf.zeros([1, *IMG_SIZE, 3], dtype=tf.float32)
+    tf.debugging.assert_near(
+        model(sample, training=False),
+        inference_model(sample, training=False),
+        message="Inference-only model does not match the trained model output.",
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="eye-look-saved-model-") as temp_dir:
         saved_model_dir = Path(temp_dir) / "saved_model"
@@ -50,10 +103,10 @@ def main():
             ]
         )
         def serve(images):
-            return {"probabilities": model(images, training=False)}
+            return {"probabilities": inference_model(images, training=False)}
 
         tf.saved_model.save(
-            model,
+            inference_model,
             str(saved_model_dir),
             signatures={"serving_default": serve},
         )
