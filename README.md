@@ -4,6 +4,24 @@ A webcam-based educational project that classifies visible eye-look images with 
 
 > This predicts the folder label from pixels; it does not measure a person's mental attention. Accuracy depends on data quality and how closely training images match webcam images. It can be wrong with glasses, lighting, camera angle, multiple faces, or unusual posture. Do not use it for employee/student surveillance or high-stakes decisions.
 
+## Browser demo and GitHub Pages
+
+GitHub Pages is a static host, so the browser demo runs the classifier locally in the visitor's browser; Pages does not run the Python webcam app. The demo asks for camera permission only after the visitor presses **Start camera**. Camera frames are processed in the browser and are not uploaded. The model weights are published with the site, but the training dataset is not.
+
+The `Build and deploy webcam classifier` GitHub Actions workflow converts `models/focus_model.keras` to TensorFlow.js, builds the static site in `web/`, and deploys it to Pages on pushes to `main`. The live site is:
+
+https://abdulmoizhashmi.github.io/-Screen-Focus-Estimator/
+
+To try the website locally:
+```bash
+cd web
+npm ci
+npm run dev
+```
+Open the printed local URL and click **Start camera**. Use HTTPS (GitHub Pages already does) or localhost for camera access.
+
+To publish a newly trained model, replace `models/focus_model.keras` and `models/class_names.json` with the matching files, then commit and push them. The Pages workflow will rebuild and redeploy the browser model.
+
 ## Setup (Python 3.10 or 3.11)
 ```bash
 py -3.11 -m venv .venv
@@ -62,6 +80,8 @@ Use each dataset under its own access and license terms. Do not relabel gaze dir
 - `collect_data.py` — capture and label face crops
 - `train.py` — MobileNetV2 transfer learning and evaluation
 - `app.py` — real-time webcam prediction
+- `web/` — static browser webcam app for GitHub Pages
+- `.github/workflows/pages.yml` — browser model export, build, and Pages deployment
 - `src/` — model and preprocessing helpers
 - `data/` — generated labeled images
 - `models/` — trained CNN and class names

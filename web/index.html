@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A browser-based eye-look classifier. Camera frames are processed locally."
+    />
+    <meta name="theme-color" content="#10151b" />
+    <title>Eye Look Classifier</title>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">ON-DEVICE COMPUTER VISION</p>
+        <h1>Eye Look Classifier</h1>
+        <p class="intro">
+          See a browser-based estimate of visible eye direction. Camera frames
+          stay on this device.
+        </p>
+      </header>
+
+      <section class="panel" aria-labelledby="camera-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LIVE DEMO</p>
+            <h2 id="camera-heading">Camera preview</h2>
+          </div>
+          <span id="status" class="status" role="status" aria-live="polite">
+            Ready when you are
+          </span>
+        </div>
+
+        <div class="camera-frame">
+          <video id="video" playsinline muted aria-label="Live camera preview"></video>
+          <canvas id="overlay" aria-hidden="true"></canvas>
+          <div id="placeholder" class="placeholder">
+            <span class="camera-icon" aria-hidden="true">◉</span>
+            <p>Start the camera to begin</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="start" class="button button-primary" type="button">
+            Start camera
+          </button>
+          <button id="stop" class="button button-secondary" type="button" disabled>
+            Stop
+          </button>
+        </div>
+
+        <div class="prediction" aria-live="polite">
+          <p class="eyebrow">CURRENT ESTIMATE</p>
+          <p id="prediction" class="prediction-label">—</p>
+          <p id="confidence" class="confidence"></p>
+        </div>
+      </section>
+
+      <aside class="notice">
+        <strong>Limits and privacy</strong>
+        <p>
+          This predicts one of four dataset labels, not mental attention. It may
+          be inaccurate, especially because the training eye crops differ from
+          webcam crops. The camera is only requested after you press Start.
+          Video frames are analyzed locally and are not uploaded.
+        </p>
+      </aside>
+      <footer>Allow camera access and use a modern browser over HTTPS.</footer>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

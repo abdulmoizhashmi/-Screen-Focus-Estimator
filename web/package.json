@@ -1,0 +1,17 @@
+{
+  "name": "screen-focus-estimator-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "1.2.2",
+    "@tensorflow/tfjs": "4.22.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.8"
+  }
+}
