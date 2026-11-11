@@ -12,6 +12,8 @@ The `Build and deploy webcam classifier` GitHub Actions workflow converts `model
 
 https://abdulmoizhashmi.github.io/-Screen-Focus-Estimator/
 
+For the first deployment, open the repository's **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**.
+
 To try the website locally:
 ```bash
 cd web

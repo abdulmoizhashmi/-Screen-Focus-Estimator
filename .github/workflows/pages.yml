@@ -10,6 +10,7 @@ on:
       - "requirements-tfjs.txt"
       - "scripts/export_tfjs.py"
       - "web/**"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
